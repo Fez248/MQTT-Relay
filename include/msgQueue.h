@@ -11,7 +11,10 @@ struct msg_content {
 struct msg_msgbuf {                                                         
   long mtype;                                                               
   struct msg_content content;                                               
-};   
+};  
+
+// type, 0 send, 1 receive
+int createKey(int *key, int type);
 
 
 
