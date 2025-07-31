@@ -13,8 +13,7 @@ struct msg_msgbuf {
   struct msg_content content;                                               
 };  
 
-// type, 0 send, 1 receive
-int createKey(int *key, int type);
+int createKey(int keys[2]);
 
 
 
