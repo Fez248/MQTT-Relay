@@ -1,0 +1,37 @@
+Custom Non-Commercial License
+Copyright (c) 2025 Ferran Benéitez Borrut
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to use,
+copy, modify, and distribute the Software for **non-commercial purposes only**, 
+subject to the following conditions:
+
+1. **Attribution**: You must give appropriate credit, provide a link to this license, 
+   and indicate if changes were made. You may do so in any reasonable manner, 
+   but not in any way that suggests the licensor endorses you or your use.
+
+2. **Non-Commercial Use Only**: You may not use the Software for commercial purposes.
+   Commercial purposes include, but are not limited to, offering the Software 
+   as part of a paid service or product, or using it within a business environment 
+   that generates revenue, directly or indirectly.
+
+3. **Commercial Licensing**: If you wish to use the Software for commercial purposes, 
+   you must obtain explicit written permission from the copyright holder:
+   
+   Ferran Benéitez Borrut  
+   beboferran@gmail.com
+
+4. **Preservation of Notices**: All copies or substantial portions of the Software 
+   must include the above copyright notice and this license.
+
+5. **Third-Party Components**: This Software may depend on third-party libraries 
+   licensed under the Eclipse Public License v2.0 or other licenses. You must 
+   comply with those licenses in addition to this one.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
