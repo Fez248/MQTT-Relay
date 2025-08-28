@@ -7,19 +7,6 @@
   exit(-1); \
 }
 
-char *address, *client_ID,
-       *pre_topic_device, *pre_topic_server,
-       *n_topics, *ca_cert,
-       *cli_cert, *cli_key;
-
-// I have to test which of these two options is most efficient
-// Array of topics and array of vars with the topic each one triggers
-char **topics;
-char ***varsAndTopics;
-
-// Array of topics with all the vars that trigger them
-char **topicsAndVars;
-
 int init() {
   printf("Configuring library...\n");
 
@@ -70,10 +57,10 @@ int init() {
   topicsAndVars = malloc(sizeof(char *) * (long unsigned int) n_topics);
   for (int i = 1; i <= (int) n_topics; ++i) {
     sprintf(aux, "VARS_TOPIC_%i", i);
-    *topicsAndVars = secure_getenv(aux);
+    topicsAndVars[i - 1] =           secure_getenv(aux);
     if (!*topicsAndVars)
       handle_error("%s is null\n");
-    printf("%s: %s\n", aux, *topicsAndVars);
+    printf("%s: %s\n", aux, topicsAndVars[i - 1]);
   }
 
   printf("Library configured correctly\n");

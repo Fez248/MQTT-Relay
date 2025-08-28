@@ -8,12 +8,28 @@
 
 #define MAX_TOPIC_SIZE 256
 
-extern char *address, *client_ID,
+char *address, *client_ID,
        *pre_topic_device, *pre_topic_server,
        *n_topics, *ca_cert,
        *cli_cert, *cli_key;
 
-extern char **topicsAndVars;
+// I'll need this to know how much to allocate
+char *auxVars;
+char *auxTopics;
+
+// We are building a map yeaaah
+struct VarTopic {
+  char *var;
+  char *topic;
+};
+
+struct VarTopic *map;
+
+// Sort map
+void sort();
+
+// Search in map for VarTopic with var as key
+struct *VarTopic search(char *var);
 
 // Load config from .env file
 int init();
