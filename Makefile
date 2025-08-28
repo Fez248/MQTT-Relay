@@ -1,17 +1,17 @@
 # I need to add static compilation and understand better dynamic but I'll
 # do that once I link the MQTT libraries
 
-all: mqtt_c_fez mqtt_c_fez_Dynamic
+all: mqttCFez mqttCFez-Dynamic c-test
 test: c_test
 
-mqtt_c_fez: src/mqtt_c_fez.c
-	gcc -I./include/ -c src/mqtt_c_fez.c -o build/mqtt_c_fez.o
+mqttCFez: src/mqttCFez.c
+	gcc -I./include/ -c src/mqttCFez.c -o build/mqttCFez.o
 
-mqtt_c_fez_Dynamic: src/mqtt_c_fez.c
-	gcc -I./include/ -fPIC -shared src/mqtt_c_fez.c -o build/mqtt_c_fez.so	
+mqttCFez-Dynamic: src/mqttCFez.c
+	gcc -I./include/ -fPIC -shared src/mqttCFez.c -o build/mqttCFez.so	
 
-c_test: src/c_test.c build/mqtt_c_fez.o
-	gcc -I./include/ -o build/c_test src/c_test.c build/mqtt_c_fez.o
+c-test: src/c-test.c src/mqttCFez.c
+	gcc -I./include/ -o build/c-test src/mqttCFez.c src/c-test.c 
 
 clean:
 	rm -rf build/* 
