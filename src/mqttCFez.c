@@ -18,7 +18,7 @@ char **topics;
 char ***varsAndTopics;
 
 // Array of topics with all the vars that trigger them
-char ***topicsAndVars;
+char **topicsAndVars;
 
 int init() {
   printf("Configuring library...\n");
@@ -67,13 +67,13 @@ int init() {
 
   // Lets do this come on
   char *aux = malloc(aux_Size);
-  topicsAndVars = malloc(sizeof(char **) * (long unsigned int) n_topics);
+  topicsAndVars = malloc(sizeof(char *) * (long unsigned int) n_topics);
   for (int i = 1; i <= (int) n_topics; ++i) {
     sprintf(aux, "VARS_TOPIC_%i", i);
-    *topicsAndVars = (char **) secure_getenv(aux);
+    *topicsAndVars = secure_getenv(aux);
     if (!*topicsAndVars)
       handle_error("%s is null\n");
-    printf("%s: %s\n", aux, (char *) *topicsAndVars);
+    printf("%s: %s\n", aux, *topicsAndVars);
   }
 
   printf("Library configured correctly\n");

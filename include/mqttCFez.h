@@ -13,13 +13,7 @@ extern char *address, *client_ID,
        *n_topics, *ca_cert,
        *cli_cert, *cli_key;
 
-// I have to test which of these two options is most efficient in time and
-// more important in memmory
-// Array of topics with all the vars and commas of the .env file
-extern char **topicsAndVarsWithoutTreatment;
-
-// Array of topics with all the vars that trigger them kindly separated
-extern char ***topicsAndVars;
+extern char **topicsAndVars;
 
 // Load config from .env file
 int init();
