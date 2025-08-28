@@ -1,4 +1,4 @@
-#include "mqtt_c_fez.h"
+#include "mqttCFez.h"
 
 int main (void) {
   init();
