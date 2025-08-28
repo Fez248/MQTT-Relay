@@ -1,1 +1,5 @@
 .env
+.vscode
+
+# Ignore swap files from Vim
+*.swp
