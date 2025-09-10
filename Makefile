@@ -5,13 +5,13 @@ all: mqttCFez mqttCFez-Dynamic c-test
 test: c_test
 
 mqttCFez: src/mqttCFez.c
-	gcc -I./include/ -c src/mqttCFez.c -o build/mqttCFez.o
+	gcc -I./include/ -o build/mqttCFez.o -c src/mqttCFez.c -lm
 
 mqttCFez-Dynamic: src/mqttCFez.c
-	gcc -I./include/ -fPIC -shared src/mqttCFez.c -o build/mqttCFez.so	
+	gcc -I./include/ -fPIC -shared -o build/mqttCFez.so src/mqttCFez.c -lm
 
 c-test: src/c-test.c src/mqttCFez.c
-	gcc -I./include/ -o build/c-test src/mqttCFez.c src/c-test.c 
+	gcc -I./include/ -o build/c-test src/mqttCFez.c src/c-test.c -lm
 
 clean:
 	rm -rf build/* 
