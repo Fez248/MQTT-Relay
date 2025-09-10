@@ -25,9 +25,9 @@ int num_digits(int n) {
 // asumme aux has exactly one space between vars, and none before neither
 // after the whole string: TO DO: sanitize the input
 void load_map(char *aux, int i) {
-  if (aux[0] == '\0')
+  if (!strlen(aux))
     return;
-
+  
   char *start = aux;
   char *blank = strchr(start, ' ');
   if (!blank)
@@ -35,12 +35,20 @@ void load_map(char *aux, int i) {
 
   while (blank) {
     struct node *varTopic = malloc(sizeof(struct node));
+    
     varTopic->var = malloc(sizeof(char) * (blank - start + 1));
     memcpy(varTopic->var, start, blank - start);
     (varTopic->var)[blank - start + 1] = '\0';
-    printf("%s\n", varTopic->var);
+    // printf("%s\n", varTopic->var);
 
-    if (*blank == '\0' || blank == &aux[strlen(aux)])
+    varTopic->topic = topics[i];
+
+    if (map.root == NULL) {
+      varTopic->left = varTopic->right = varTopic->parent = NULL; 
+      map.root = varTopic;
+    }
+
+    if (blank == &aux[strlen(aux)])
       blank = NULL;
     else {
       start = blank + 1;
@@ -48,15 +56,10 @@ void load_map(char *aux, int i) {
       if (!blank)
         blank = &aux[strlen(aux)]; 
     }
-
-    free(varTopic->var);
-    free(varTopic);
   }
 }
 
 void load() {
-  map.root = malloc(sizeof(struct node));
-  
   char *topicName = malloc(strlen("TOPIC_") + num_digits(n_topics) + 1);
   topics = malloc(sizeof(char *) * n_topics);
 
@@ -75,9 +78,12 @@ void load() {
     char *aux = secure_getenv(topicName);
     if (!aux)
       handle_error("error reading vars")
-    printf("%s\n", aux);
     load_map(aux, i); 
-  } 
+  }
+  
+  printf("Root var: %s, with topic: %s\n", (map.root)->var,
+    (map.root)->topic);
+
 }
 
 int init() {
