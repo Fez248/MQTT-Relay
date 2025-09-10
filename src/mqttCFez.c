@@ -7,6 +7,79 @@
   exit(-1); \
 }
 
+char *address, *client_ID,
+       *pre_topic_device, *pre_topic_server,
+       *ca_cert, *cli_cert, *cli_key;
+
+int n_topics;
+      
+char **topics;
+struct MapStruct map;
+
+int num_digits(int n) {
+    if (n == 0) return 1;
+    if (n < 0) n = -n;
+    return floor(log10((double)n)) + 1;
+}
+
+// asumme aux has exactly one space between vars, and none before neither
+// after the whole string: TO DO: sanitize the input
+void load_map(char *aux, int i) {
+  if (aux[0] == '\0')
+    return;
+
+  char *start = aux;
+  char *blank = strchr(start, ' ');
+  if (!blank)
+   blank = &aux[strlen(aux)]; 
+
+  while (blank) {
+    struct node *varTopic = malloc(sizeof(struct node));
+    varTopic->var = malloc(sizeof(char) * (blank - start + 1));
+    memcpy(varTopic->var, start, blank - start);
+    (varTopic->var)[blank - start + 1] = '\0';
+    printf("%s\n", varTopic->var);
+
+    if (*blank == '\0' || blank == &aux[strlen(aux)])
+      blank = NULL;
+    else {
+      start = blank + 1;
+      blank = strchr(start, ' '); 
+      if (!blank)
+        blank = &aux[strlen(aux)]; 
+    }
+
+    free(varTopic->var);
+    free(varTopic);
+  }
+}
+
+void load() {
+  map.root = malloc(sizeof(struct node));
+  
+  char *topicName = malloc(strlen("TOPIC_") + num_digits(n_topics) + 1);
+  topics = malloc(sizeof(char *) * n_topics);
+
+  for (int i = 0; i < n_topics; ++i) {
+    sprintf(topicName, "TOPIC_%i\0", i + 1); 
+    topics[i] = secure_getenv(topicName);
+    if (!topics[i])
+      handle_error("topics is null");
+    printf("%s\n", topics[i]);
+  } 
+ 
+  free(topicName);
+  topicName = malloc(strlen("VARS_TOPIC_") + num_digits(n_topics) + 1);
+  for (int i = 0; i < (int) n_topics; ++i) {
+    sprintf(topicName, "VARS_TOPIC_%i\0", i + 1);
+    char *aux = secure_getenv(topicName);
+    if (!aux)
+      handle_error("error reading vars")
+    printf("%s\n", aux);
+    load_map(aux, i); 
+  } 
+}
+
 int init() {
   printf("Configuring library...\n");
 
@@ -30,12 +103,10 @@ int init() {
     handle_error("PRE_TOPIC_SERVER is null");
   printf("PRE_TOPIC_SERVER: %s\n", pre_topic_server);
 
-  n_topics = secure_getenv("N_TOPICS");
-  if (!n_topics)
+  n_topics = atoi(secure_getenv("N_TOPICS"));
+  if (n_topics == 0)
     handle_error("N_TOPICS is null");
-  int aux_Size = strlen("VARS_TOPIC_") + strlen(n_topics);
-  n_topics = (char *) atoi(n_topics); // This is IoT I have to safe space
-  printf("N_TOPICS: %i\n", (int *) n_topics); // I'll change it dnt worry
+  printf("N_TOPICS: %i\n", n_topics);
 
   ca_cert = secure_getenv("CA_CERT");
   if (!ca_cert)
@@ -52,6 +123,7 @@ int init() {
     handle_error("CLI_KEY is null");
   printf("CLI_KEy: %s\n", cli_key);
 
+  /*
   // Lets do this come on
   char *aux = malloc(aux_Size);
   topicsAndVars = malloc(sizeof(char *) * (long unsigned int) n_topics);
@@ -62,9 +134,9 @@ int init() {
       handle_error("%s is null\n");
     printf("%s: %s\n", aux, topicsAndVars[i - 1]);
   }
-
+  */
   printf("Library configured correctly\n");
-
+  load();
   // Lets do this one more time ohohoho
   // Starships were meant to flyy
   // Hands up and touch the skyy
