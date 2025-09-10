@@ -5,31 +5,41 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <math.h>
 
 #define MAX_TOPIC_SIZE 256
 
-char *address, *client_ID,
+extern char *address, *client_ID,
        *pre_topic_device, *pre_topic_server,
-       *n_topics, *ca_cert,
-       *cli_cert, *cli_key;
+       *ca_cert, *cli_cert, *cli_key;
 
-// I'll need this to know how much to allocate
-char *auxVars;
-char *auxTopics;
+extern int n_topics;
 
 // We are building a map yeaaah
-struct VarTopic {
+struct node {
   char *var;
   char *topic;
+  struct node *left;
+  struct node *right;
+  struct node *parent;
 };
 
-struct VarTopic *map;
+struct MapStruct {
+  struct node *root; 
+};
+
+extern char **topics;
+
+void freePointers();
+
+// Load map
+void load();
 
 // Sort map
 void sort();
 
 // Search in map for VarTopic with var as key
-struct *VarTopic search(char *var);
+struct VarTopic* search(char *var);
 
 // Load config from .env file
 int init();
