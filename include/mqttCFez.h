@@ -9,16 +9,11 @@
 
 #define MAX_TOPIC_SIZE 256
 
-extern char *address, *client_ID,
-       *pre_topic_device, *pre_topic_server,
-       *ca_cert, *cli_cert, *cli_key;
-
-extern int n_topics;
-
-// We are building a map yeaaah
 struct node {
   char *var;
   char *topic;
+  uint8_t leftHeight;
+  uint8_t rightHeight;
   struct node *left;
   struct node *right;
   struct node *parent;
