@@ -23,18 +23,20 @@ struct MapStruct {
   struct node *root; 
 };
 
-extern char **topics;
+struct Config {
+    char *address;
+    char *client_ID;
+    char *pre_topic_device;
+    char *pre_topic_server;
+    char *ca_cert;
+    char *cli_cert;
+    char *cli_key;
 
-void freePointers();
+    int n_topics;
+    char **topics;
 
-// Load map
-void load();
-
-// Sort map
-void sort();
-
-// Search in map for VarTopic with var as key
-struct VarTopic* search(char *var);
+    struct MapStruct map;
+};
 
 // Load config from .env file
 int init();
