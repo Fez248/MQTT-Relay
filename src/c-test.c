@@ -1,5 +1,5 @@
 #include "mqttCFez.h"
 
 int main (void) {
-  init();
+  config_init();
 }

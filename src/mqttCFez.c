@@ -38,7 +38,7 @@ void load_map(struct Config *cfg, char *vars, int i) {
     struct node *varTopic = calloc(1, sizeof(struct node));
     varTopic->var = malloc(strlen(token) + 1);
     strcpy(varTopic->var, token);
-    varTopic->topic = topics[i];    
+    varTopic->topic = cfg->topics[i];    
 
     add_node(&(cfg->map), varTopic);
 
@@ -50,7 +50,7 @@ void load_topics(struct Config *cfg) {
   char *topicName = malloc(strlen("TOPIC_") + num_digits(cfg->n_topics) + 1);
   for (int i = 0; i < cfg->n_topics; ++i) {
     sprintf(topicName, "TOPIC_%i", i + 1); 
-    topics[i] = secure_getenv(topicName);
+    cfg->topics[i] = secure_getenv(topicName);
     if (!cfg->topics[i]) handle_error("topics is NULL");
     printf("%s\n", cfg->topics[i]);
   }
@@ -69,11 +69,11 @@ void load_vars(struct Config *cfg) {
 }
 
 void load(struct Config *cfg) {
-  cfg->topics = malloc(sizeof(char *) * n_topics);
+  cfg->topics = malloc(sizeof(char *) * cfg->n_topics);
   load_topics(cfg); 
   load_vars(cfg);
-  printf("Root var: %s, with topic: %s\n", (cfg->(map.root))->var,
-    (cfg->(map.root))->topic);
+  printf("Root var: %s, with topic: %s\n", cfg->map.root->var,
+    cfg->map.root->topic);
 }
 
 struct Config *config_init(void) {

@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <string.h>
 #include <math.h>
+#include <stdint.h>
 
 #define MAX_TOPIC_SIZE 256
 
@@ -39,7 +40,7 @@ struct Config {
 };
 
 // Load config from .env file
-int init();
+struct Config *config_init();
 
 // Connect to the MQTT server and set up callback
 // If we use the callback we are in async mode
