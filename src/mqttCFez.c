@@ -2,9 +2,8 @@
 #include "mqttCFez.h"
 
 #define handle_error(msg) { \
-  errno = -1; \
-  perror(msg); \
-  exit(-1); \
+  fprintf(stderr, "%s", msg); \
+  exit(EXIT_FAILURE); \
 }
 
 char *address, *client_ID,
