@@ -6,131 +6,119 @@
   exit(EXIT_FAILURE); \
 }
 
-char *address, *client_ID,
-       *pre_topic_device, *pre_topic_server,
-       *ca_cert, *cli_cert, *cli_key;
-
-int n_topics;
-      
-char **topics;
-struct MapStruct map;
-
 int num_digits(int n) {
     if (n == 0) return 1;
     if (n < 0) n = -n;
     return floor(log10((double)n)) + 1;
 }
 
-void add_node(struct node *varTopic) {
-  if (map.root == NULL) {
+// I have the algorithm in my notebook, remember to make this function
+// recursive
+void add_node(struct MapStruct *map, struct node *varTopic) {
+  if (map->root == NULL) {
     varTopic->left = varTopic->right = varTopic->parent = NULL; 
-    map.root = varTopic;
+    map->root = varTopic;
   }
 
 
 }
 
-void load_map(char *vars, int i) {
+void load_map(struct Config *cfg, char *vars, int i) {
   if (!vars || !*vars) return; 
 
   // strtok_r modifies the original string, and we do not want
   // to modify the env var, so we must copy it 
   char *varsCopy = strdup(vars);
+  if (!varsCopy) handle_error("strdup failed");
+
   char *savePtr = NULL;
-  strcpy(varsCopy, vars);
   char *token = strtok_r(varsCopy, " ", &savePtr); 
 
   while (token) {
-    struct node *varTopic = malloc(sizeof(struct node));
+    struct node *varTopic = calloc(1, sizeof(struct node));
     varTopic->var = malloc(strlen(token) + 1);
     strcpy(varTopic->var, token);
-    varTopic->topic = topics[i];
+    varTopic->topic = topics[i];    
 
-    add_node(varTopic);
+    add_node(&(cfg->map), varTopic);
 
     token = strtok_r(NULL, " ", &savePtr);
   }
 }
 
-void load_topics() {
-  char *topicName = malloc(strlen("TOPIC_") + num_digits(n_topics) + 1);
-  for (int i = 0; i < n_topics; ++i) {
+void load_topics(struct Config *cfg) {
+  char *topicName = malloc(strlen("TOPIC_") + num_digits(cfg->n_topics) + 1);
+  for (int i = 0; i < cfg->n_topics; ++i) {
     sprintf(topicName, "TOPIC_%i", i + 1); 
     topics[i] = secure_getenv(topicName);
-    if (!topics[i])
-      handle_error("topics is NULL");
-    printf("%s\n", topics[i]);
+    if (!cfg->topics[i]) handle_error("topics is NULL");
+    printf("%s\n", cfg->topics[i]);
   }
   free(topicName);
 }
 
-void load_vars() {
-  char *topicName = malloc(strlen("VARS_TOPIC_") + num_digits(n_topics) + 1);
-  for (int i = 0; i < (int) n_topics; ++i) {
+void load_vars(struct Config *cfg) {
+  char *topicName = malloc(strlen("VARS_TOPIC_") + num_digits(cfg->n_topics) + 1);
+  for (int i = 0; i < cfg->n_topics; ++i) {
     sprintf(topicName, "VARS_TOPIC_%i", i + 1);
     char *vars = secure_getenv(topicName);
-    if (!vars)
-      handle_error("error reading vars");
-    load_map(vars, i); 
+    if (!vars) handle_error("error reading vars");
+    load_map(cfg, vars, i); 
   }
   free(topicName);
 }
 
-void load() {
-  topics = malloc(sizeof(char *) * n_topics);
-  load_topics(); 
-  load_vars();
-  printf("Root var: %s, with topic: %s\n", (map.root)->var,
-    (map.root)->topic);
+void load(struct Config *cfg) {
+  cfg->topics = malloc(sizeof(char *) * n_topics);
+  load_topics(cfg); 
+  load_vars(cfg);
+  printf("Root var: %s, with topic: %s\n", (cfg->(map.root))->var,
+    (cfg->(map.root))->topic);
 }
 
-int init() {
+struct Config *config_init(void) {
   printf("Configuring library...\n");
 
-  address = secure_getenv("ADDRESS");
-  if (!address)
-    handle_error("ADDRESS is NULL");
-  printf("ADDRESS: %s\n", address);
+  struct Config *cfg = calloc(1, sizeof(*cfg));
+  if (!cfg) handle_error("Calloc failed\n");
+
+  cfg->address = secure_getenv("ADDRESS");
+  if (!cfg->address) handle_error("ADDRESS is NULL");
+  printf("ADDRESS: %s\n", cfg->address);
      
-  client_ID = secure_getenv("CLIENT_ID");
-  if (!client_ID)
-    handle_error("CLIENT_ID is NULL");
-  printf("CLIENT_ID: %s\n", client_ID);
+  cfg->client_ID = secure_getenv("CLIENT_ID");
+  if (!cfg->client_ID) handle_error("CLIENT_ID is NULL");
+  printf("CLIENT_ID: %s\n", cfg->client_ID);
 
-  pre_topic_device = secure_getenv("PRE_TOPIC_DEVICE");
-  if (!pre_topic_device)
-    handle_error("PRE_TOPIC_DEVICE is NULL");
-  printf("PRE_TOPIC_DEVICE: %s\n", pre_topic_device);
+  cfg->pre_topic_device = secure_getenv("PRE_TOPIC_DEVICE");
+  if (!cfg->pre_topic_device) handle_error("PRE_TOPIC_DEVICE is NULL");
+  printf("PRE_TOPIC_DEVICE: %s\n", cfg->pre_topic_device);
 
-  pre_topic_server = secure_getenv("PRE_TOPIC_SERVER");
-  if (!pre_topic_server)
-    handle_error("PRE_TOPIC_SERVER is NULL");
-  printf("PRE_TOPIC_SERVER: %s\n", pre_topic_server);
+  cfg->pre_topic_server = secure_getenv("PRE_TOPIC_SERVER");
+  if (!cfg->pre_topic_server) handle_error("PRE_TOPIC_SERVER is NULL");
+  printf("PRE_TOPIC_SERVER: %s\n", cfg->pre_topic_server);
 
   char *n_topics_string = secure_getenv("N_TOPICS");
-  if (!n_topics_string)
-    handle_error("N_TOPICS is NULL");
-  n_topics = atoi(n_topics_string);
-  if (n_topics <= 0)
-    handle_error("N_TOPICS must be > 0");
-  printf("N_TOPICS: %i\n", n_topics);
+  if (!n_topics_string) handle_error("N_TOPICS is NULL");
+  cfg->n_topics = atoi(n_topics_string);
+  if (cfg->n_topics <= 0) handle_error("N_TOPICS must be > 0");
+  printf("N_TOPICS: %i\n", cfg->n_topics);
 
-  ca_cert = secure_getenv("CA_CERT");
-  if (!ca_cert)
-    handle_error("CA_CERT is NULL");
-  printf("CA_CERT: %s\n", ca_cert);
+  cfg->ca_cert = secure_getenv("CA_CERT");
+  if (!cfg->ca_cert) handle_error("CA_CERT is NULL");
+  printf("CA_CERT: %s\n", cfg->ca_cert);
   
-  cli_cert = secure_getenv("CLI_CERT");
-  if (!cli_cert)
-    handle_error("CLI_CERT is NULL");
-  printf("CLI_CERT: %s\n", cli_cert);
+  cfg->cli_cert = secure_getenv("CLI_CERT");
+  if (!cfg->cli_cert) handle_error("CLI_CERT is NULL");
+  printf("CLI_CERT: %s\n", cfg->cli_cert);
 
-  cli_key = secure_getenv("CLI_KEY");
-  if (!cli_key)
-    handle_error("CLI_KEY is NULL");
-  printf("CLI_KEY: %s\n", cli_key);
+  cfg->cli_key = secure_getenv("CLI_KEY");
+  if (!cfg->cli_key) handle_error("CLI_KEY is NULL");
+  printf("CLI_KEY: %s\n", cfg->cli_key);
+
+  load(cfg);
 
   printf("Library configured correctly\n");
-  load();
+  return cfg;
 }
 
