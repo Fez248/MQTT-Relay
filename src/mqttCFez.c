@@ -21,68 +21,67 @@ int num_digits(int n) {
     return floor(log10((double)n)) + 1;
 }
 
-// asumme aux has exactly one space between vars, and none before neither
-// after the whole string: TO DO: sanitize the input
-void load_map(char *aux, int i) {
-  if (!strlen(aux))
-    return;
-  
-  char *start = aux;
-  char *blank = strchr(start, ' ');
-  if (!blank)
-   blank = &aux[strlen(aux)]; 
+void add_node(struct node *varTopic) {
+  if (map.root == NULL) {
+    varTopic->left = varTopic->right = varTopic->parent = NULL; 
+    map.root = varTopic;
+  }
 
-  while (blank) {
+
+}
+
+void load_map(char *vars, int i) {
+  if (!vars || !*vars) return; 
+
+  // strtok_r modifies the original string, and we do not want
+  // to modify the env var, so we must copy it 
+  char *varsCopy = strdup(vars);
+  char *savePtr = NULL;
+  strcpy(varsCopy, vars);
+  char *token = strtok_r(varsCopy, " ", &savePtr); 
+
+  while (token) {
     struct node *varTopic = malloc(sizeof(struct node));
-    
-    varTopic->var = malloc(sizeof(char) * (blank - start + 1));
-    memcpy(varTopic->var, start, blank - start);
-    (varTopic->var)[blank - start + 1] = '\0';
-    // printf("%s\n", varTopic->var);
-
+    varTopic->var = malloc(strlen(token) + 1);
+    strcpy(varTopic->var, token);
     varTopic->topic = topics[i];
 
-    if (map.root == NULL) {
-      varTopic->left = varTopic->right = varTopic->parent = NULL; 
-      map.root = varTopic;
-    }
+    add_node(varTopic);
 
-    if (blank == &aux[strlen(aux)])
-      blank = NULL;
-    else {
-      start = blank + 1;
-      blank = strchr(start, ' '); 
-      if (!blank)
-        blank = &aux[strlen(aux)]; 
-    }
+    token = strtok_r(NULL, " ", &savePtr);
   }
 }
 
-void load() {
+void load_topics() {
   char *topicName = malloc(strlen("TOPIC_") + num_digits(n_topics) + 1);
-  topics = malloc(sizeof(char *) * n_topics);
-
   for (int i = 0; i < n_topics; ++i) {
-    sprintf(topicName, "TOPIC_%i\0", i + 1); 
+    sprintf(topicName, "TOPIC_%i", i + 1); 
     topics[i] = secure_getenv(topicName);
     if (!topics[i])
-      handle_error("topics is null");
+      handle_error("topics is NULL");
     printf("%s\n", topics[i]);
-  } 
- 
-  free(topicName);
-  topicName = malloc(strlen("VARS_TOPIC_") + num_digits(n_topics) + 1);
-  for (int i = 0; i < (int) n_topics; ++i) {
-    sprintf(topicName, "VARS_TOPIC_%i\0", i + 1);
-    char *aux = secure_getenv(topicName);
-    if (!aux)
-      handle_error("error reading vars")
-    load_map(aux, i); 
   }
-  
+  free(topicName);
+}
+
+void load_vars() {
+  char *topicName = malloc(strlen("VARS_TOPIC_") + num_digits(n_topics) + 1);
+  for (int i = 0; i < (int) n_topics; ++i) {
+    sprintf(topicName, "VARS_TOPIC_%i", i + 1);
+    char *vars = secure_getenv(topicName);
+    if (!vars)
+      handle_error("error reading vars");
+    load_map(vars, i); 
+  }
+  free(topicName);
+}
+
+void load() {
+  topics = malloc(sizeof(char *) * n_topics);
+  load_topics(); 
+  load_vars();
   printf("Root var: %s, with topic: %s\n", (map.root)->var,
     (map.root)->topic);
-
 }
 
 int init() {
