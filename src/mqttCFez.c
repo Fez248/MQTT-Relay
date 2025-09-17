@@ -83,12 +83,19 @@ void load_vars(struct Config *cfg) {
   free(topicName);
 }
 
+void print_tree(struct node *root, int depth) {
+  if (root == NULL) return;
+  print_tree(root->left, depth + strlen(root->var));
+  for (int i = 0; i < depth; ++i) printf(" ");
+  printf("%s\n", root->var);
+  print_tree(root->right, depth + strlen(root->var));
+}
+
 void load(struct Config *cfg) {
   cfg->topics = malloc(sizeof(char *) * cfg->n_topics);
   load_topics(cfg); 
   load_vars(cfg);
-  printf("Root var: %s, with topic: %s\n", cfg->map.root->var,
-    cfg->map.root->topic);
+  print_tree(cfg->map.root, 0);
 }
 
 struct Config *config_init(void) {
