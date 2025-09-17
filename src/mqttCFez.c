@@ -12,15 +12,29 @@ int num_digits(int n) {
     return floor(log10((double)n)) + 1;
 }
 
-// I have the algorithm in my notebook, remember to make this function
-// recursive
-void add_node(struct MapStruct *map, struct node *varTopic) {
-  if (map->root == NULL) {
-    varTopic->left = varTopic->right = varTopic->parent = NULL; 
-    map->root = varTopic;
+// The returns are not correct and only temporal for testing
+int add_node(struct node *root, struct node *parent, struct node *varTopic) {
+  // Base case
+  if (root == NULL) {
+    varTopic->leftHeight = varTopic->rightHeight = 0;
+    varTopic->left = varTopic->right = NULL; 
+    varTopic->parent = parent;
+    return 0;
   }
 
-
+  if (strcmp(varTopic->var, root->var) < 0) {
+    int ret = add_node(root->left, root, varTopic);
+    if (ret == -1) return -1;
+    if (ret == 0) root->left = varTopic;
+    return root->leftHeight = (ret + 1);
+  }
+  else if (strcmp(varTopic->var, root->var) > 0) {
+    int ret = add_node(root->right, root, varTopic);
+    if (ret == -1) return -1;
+    if (ret == 0) root->right = varTopic;
+    return root->rightHeight = (ret + 1);
+  }
+  else return -1;
 }
 
 void load_map(struct Config *cfg, char *vars, int i) {
