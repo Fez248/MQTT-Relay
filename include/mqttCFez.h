@@ -1,6 +1,7 @@
 #ifndef MQTTCFEZ_H
 #define MQTTCFEZ_H
 
+#include <sys/param.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -51,6 +52,6 @@ int send();
 
 // Read msg from the MQTT server
 // If we use the read function we are in sync mode
-int read();
+// int read();
 
 #endif
