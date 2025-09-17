@@ -54,7 +54,8 @@ void load_map(struct Config *cfg, char *vars, int i) {
     strcpy(varTopic->var, token);
     varTopic->topic = cfg->topics[i];    
 
-    add_node(&(cfg->map), varTopic);
+    if (add_node(cfg->map.root, NULL, varTopic) == -1) printf("A node with this key already exists\n");
+    if (!cfg->map.root) cfg->map.root = varTopic;
 
     token = strtok_r(NULL, " ", &savePtr);
   }
