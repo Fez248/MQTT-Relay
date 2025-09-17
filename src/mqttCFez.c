@@ -13,26 +13,25 @@ int num_digits(int n) {
 }
 
 // The returns are not correct and only temporal for testing
-int add_node(struct node *root, struct node *parent, struct node *varTopic) {
+int add_node(struct node **root, struct node *parent, struct node *varTopic) {
   // Base case
-  if (root == NULL) {
+  if (*root == NULL) {
     varTopic->leftHeight = varTopic->rightHeight = 0;
     varTopic->left = varTopic->right = NULL; 
     varTopic->parent = parent;
+    *root = varTopic;
     return 0;
   }
 
-  if (strcmp(varTopic->var, root->var) < 0) {
-    int ret = add_node(root->left, root, varTopic);
+  if (strcmp(varTopic->var, (*root)->var) < 0) {
+    int ret = add_node(&((*root)->left), *root, varTopic);
     if (ret == -1) return -1;
-    if (ret == 0) root->left = varTopic;
-    return root->leftHeight = (ret + 1);
+    return (*root)->leftHeight = (ret + 1);
   }
-  else if (strcmp(varTopic->var, root->var) > 0) {
-    int ret = add_node(root->right, root, varTopic);
+  else if (strcmp(varTopic->var, (*root)->var) > 0) {
+    int ret = add_node(&((*root)->right), *root, varTopic);
     if (ret == -1) return -1;
-    if (ret == 0) root->right = varTopic;
-    return root->rightHeight = (ret + 1);
+    return (*root)->rightHeight = (ret + 1);
   }
   else return -1;
 }
@@ -54,8 +53,7 @@ void load_map(struct Config *cfg, char *vars, int i) {
     strcpy(varTopic->var, token);
     varTopic->topic = cfg->topics[i];    
 
-    if (add_node(cfg->map.root, NULL, varTopic) == -1) printf("A node with this key already exists\n");
-    if (!cfg->map.root) cfg->map.root = varTopic;
+    if (add_node(&(cfg->map.root), NULL, varTopic) == -1) printf("A node with this key already exists\n");
 
     token = strtok_r(NULL, " ", &savePtr);
   }
