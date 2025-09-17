@@ -12,6 +12,10 @@ int num_digits(int n) {
     return floor(log10((double)n)) + 1;
 }
 
+void balance_tree(struct node **root) {
+
+}
+
 // The returns are not correct and only temporal for testing
 int add_node(struct node **root, struct node *parent, struct node *varTopic) {
   // Base case
@@ -26,6 +30,7 @@ int add_node(struct node **root, struct node *parent, struct node *varTopic) {
   if (strcmp(varTopic->var, (*root)->var) < 0) {
     int ret = add_node(&((*root)->left), *root, varTopic);
     if (ret == -1) return -1;
+    if (desbalanceado) balance_tree(root);
     return (*root)->leftHeight = (ret + 1);
   }
   else if (strcmp(varTopic->var, (*root)->var) > 0) {
