@@ -1,0 +1,110 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void *add(struct TreeNode **array, int *n_elements, struct TreeNode *new) {
+    array = realloc(array, sizeof(struct TreeNode *) * (*n_elements + 1));
+    array[*n_elements] = new;
+    ++(*n_elements);
+    return array;
+}
+
+void *traverse(struct TreeNode **array, int *n_elements, struct TreeNode *node) {
+    if (!node) return array;
+    array = add(array, n_elements, node);
+    array = traverse(array, n_elements, node->right);
+    array = traverse(array, n_elements, node->left);
+    return array;
+}
+
+void swap(struct TreeNode *a, struct TreeNode *b) {
+    int aux = a->val;
+    a->val = b->val;
+    b->val = aux;
+}
+
+void merge(struct TreeNode **array, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    struct TreeNode **L = malloc(n1 * sizeof(struct TreeNode *));
+    struct TreeNode **R = malloc(n2 * sizeof(struct TreeNode *));
+
+    for (int i = 0; i < n1; i++)
+        L[i] = array[left + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = array[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        if (L[i]->val <= R[j]->val) {
+            array[k] = L[i];
+            i++;
+        } else {
+            array[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        array[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        array[k] = R[j];
+        j++;
+        k++;
+    }
+
+    free(L);
+    free(R);
+}
+
+int sort(struct TreeNode **array, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        sort(array, left, mid);
+        sort(array, mid + 1, right);
+
+        merge(array, left, mid, right);
+    }
+    return 0;
+}
+
+struct TreeNode *buildBalanced(struct TreeNode **array, int start, int end) {
+    if (start > end)
+        return NULL;
+
+    int mid = (start + end) / 2;
+    struct TreeNode *root = array[mid];
+
+    root->left  = buildBalanced(array, start, mid - 1);
+    root->right = buildBalanced(array, mid + 1, end);
+
+    return root;
+}
+
+struct TreeNode* balanceBST(struct TreeNode* root) {
+    struct TreeNode **array = malloc(sizeof(struct TreeNode *));
+
+    int n_elements = 1;
+    array[0] = root;
+
+    array = traverse(array, &n_elements, root->right);
+    array = traverse(array, &n_elements, root->left);
+
+    sort(array, 0, n_elements - 1);
+
+    for (int i = 0; i < n_elements; ++i) printf("%d\n", array[i]->val);
+
+    return buildBalanced(array, 0, n_elements - 1);
+}

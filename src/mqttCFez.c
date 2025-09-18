@@ -12,8 +12,19 @@ int num_digits(int n) {
     return floor(log10((double)n)) + 1;
 }
 
-void balance_tree(struct node **root) {
-
+void balance_tree(struct node *root) {
+  if (!root->left) {
+    root->left = root->parent;
+    root->parent = (*(root->parent)).parent;
+    (*(root->left)).parent = root;
+  }
+  else if (!root->right) {
+    root->right = root->parent;
+    root->parent = (*(root->parent)).parent;
+    (*(root->right)).parent = root;
+  }
+  else printf("None of the childs of root: %s is null? What??\n", root->var);
+  return;
 }
 
 // The returns are not correct and only temporal for testing
@@ -30,12 +41,13 @@ int add_node(struct node **root, struct node *parent, struct node *varTopic) {
   if (strcmp(varTopic->var, (*root)->var) < 0) {
     int ret = add_node(&((*root)->left), *root, varTopic);
     if (ret == -1) return -1;
-    if (desbalanceado) balance_tree(root);
+    if (ret + 1 - (*root)->rightHeight > 1) balance_tree(*root);
     return (*root)->leftHeight = (ret + 1);
   }
   else if (strcmp(varTopic->var, (*root)->var) > 0) {
     int ret = add_node(&((*root)->right), *root, varTopic);
     if (ret == -1) return -1;
+    if (ret + 1 - (*root)->leftHeight > 1) balance_tree(*root);
     return (*root)->rightHeight = (ret + 1);
   }
   else return -1;
