@@ -1,58 +1,6 @@
 #define _GNU_SOURCE
 #include "mqttCFez.h"
 
-#define handle_error(msg) { \
-  fprintf(stderr, "%s", msg); \
-  exit(EXIT_FAILURE); \
-}
-
-int num_digits(int n) {
-    if (n == 0) return 1;
-    if (n < 0) n = -n;
-    return floor(log10((double)n)) + 1;
-}
-
-void balance_tree(struct node *root) {
-  if (!root->left) {
-    root->left = root->parent;
-    root->parent = (*(root->parent)).parent;
-    (*(root->left)).parent = root;
-  }
-  else if (!root->right) {
-    root->right = root->parent;
-    root->parent = (*(root->parent)).parent;
-    (*(root->right)).parent = root;
-  }
-  else printf("None of the childs of root: %s is null? What??\n", root->var);
-  return;
-}
-
-// The returns are not correct and only temporal for testing
-int add_node(struct node **root, struct node *parent, struct node *varTopic) {
-  // Base case
-  if (*root == NULL) {
-    varTopic->leftHeight = varTopic->rightHeight = 0;
-    varTopic->left = varTopic->right = NULL; 
-    varTopic->parent = parent;
-    *root = varTopic;
-    return 0;
-  }
-
-  if (strcmp(varTopic->var, (*root)->var) < 0) {
-    int ret = add_node(&((*root)->left), *root, varTopic);
-    if (ret == -1) return -1;
-    if (ret + 1 - (*root)->rightHeight > 1) balance_tree(*root);
-    return (*root)->leftHeight = (ret + 1);
-  }
-  else if (strcmp(varTopic->var, (*root)->var) > 0) {
-    int ret = add_node(&((*root)->right), *root, varTopic);
-    if (ret == -1) return -1;
-    if (ret + 1 - (*root)->leftHeight > 1) balance_tree(*root);
-    return (*root)->rightHeight = (ret + 1);
-  }
-  else return -1;
-}
-
 void load_map(struct Config *cfg, char *vars, int i) {
   if (!vars || !*vars) return; 
 
@@ -96,14 +44,6 @@ void load_vars(struct Config *cfg) {
     load_map(cfg, vars, i); 
   }
   free(topicName);
-}
-
-void print_tree(struct node *root, int depth) {
-  if (root == NULL) return;
-  print_tree(root->left, depth + strlen(root->var));
-  for (int i = 0; i < depth; ++i) printf(" ");
-  printf("%s\n", root->var);
-  print_tree(root->right, depth + strlen(root->var));
 }
 
 void load(struct Config *cfg) {

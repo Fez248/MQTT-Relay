@@ -9,21 +9,10 @@
 #include <math.h>
 #include <stdint.h>
 
+#include "helpers.h"
+#include "map.h"
+
 #define MAX_TOPIC_SIZE 256
-
-struct node {
-  char *var;
-  char *topic;
-  uint8_t leftHeight;
-  uint8_t rightHeight;
-  struct node *left;
-  struct node *right;
-  struct node *parent;
-};
-
-struct MapStruct {
-  struct node *root; 
-};
 
 struct Config {
     char *address;
